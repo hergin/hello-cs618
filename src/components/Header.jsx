@@ -1,11 +1,18 @@
 import { Link } from 'react-router-dom'
 import { jwtDecode } from 'jwt-decode'
 import { User } from './User.jsx'
+import { useSocket } from '../contexts/SocketIOContext.jsx'
 
 import { useAuth } from '../contexts/AuthContext.jsx'
 
 export function Header() {
   const [token, setToken] = useAuth()
+  const { socket } = useSocket()
+
+  const handleLogout = () => {
+    socket.disconnect()
+    setToken(null)
+  }
 
   if (token) {
     const { sub } = jwtDecode(token)
@@ -14,7 +21,7 @@ export function Header() {
         <h1>Welcome to My Blog!</h1>
         Logged in as <User id={sub} />
         <br />
-        <button onClick={() => setToken(null)}>Logout</button>
+        <button onClick={handleLogout}>Logout</button>
       </div>
     )
   }
